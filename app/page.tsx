@@ -80,6 +80,7 @@ const ChatbotContextual = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  // FIX VERCEL: Cambiado a NodeJS.Timeout para que coincida con el tipo de setTimeout/setInterval
   const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // --- Lógica de Similitud (Levenshtein) ---
@@ -386,7 +387,7 @@ const ChatbotContextual = () => {
   // --- Lógica de Animación de Escritura ---
 
   const typeMessage = (text: string, callback: () => void): void => {
-    // ¡BUG FIX! Limpiar CUALQUIER intervalo anterior
+    // ¡BUG FIX VERCEL! Limpiar CUALQUIER intervalo anterior
     if (typingIntervalRef.current) {
       clearInterval(typingIntervalRef.current);
     }
@@ -417,6 +418,7 @@ const ChatbotContextual = () => {
       setTypingText(currentText); // Poner la PRIMERA letra
       
       // Limpiar el intervalo de "pensamiento"
+      // ¡BUG FIX VERCEL! Añadir comprobación de null
       if (typingIntervalRef.current) {
         clearInterval(typingIntervalRef.current);
       }
@@ -429,7 +431,10 @@ const ChatbotContextual = () => {
           index++;
         } else {
           // Terminar escritura
-          clearInterval(typingIntervalRef.current);
+          // ¡BUG FIX VERCEL! Añadir comprobación de null
+          if (typingIntervalRef.current) {
+            clearInterval(typingIntervalRef.current);
+          }
           setIsTyping(false);
           callback();
         }
